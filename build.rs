@@ -60,6 +60,12 @@ fn link_opus(is_static: bool, opus_build_dir: impl Display) {
     );
     println!("cargo:rustc-link-lib={}=opus", is_static_text);
     println!("cargo:rustc-link-search=native={}/lib", opus_build_dir);
+
+    if &env::var("CARGO_CFG_TARGET_ENV").unwrap() == "gnu" && env::var("CARGO_CFG_WINDOWS").is_ok()
+    {
+        // Link with libssp on *-pc-windows-gnu
+        println!("cargo:rustc-link-arg=-fstack-protector-all");
+    }
 }
 
 #[cfg(any(unix, target_env = "gnu"))]
